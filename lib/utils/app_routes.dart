@@ -18,7 +18,7 @@ class AppRoutes {
       child: AddNotePage(),
     );
   }
-
+  
   static GoRouter goRouter = GoRouter(
     initialLocation: "/",
     routes: [

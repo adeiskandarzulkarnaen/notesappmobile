@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:notes_app/db/database_service.dart';
+
+import '../models/note.dart';
 
 class AddNotePage extends StatefulWidget {
   const AddNotePage({super.key});
@@ -10,16 +14,17 @@ class AddNotePage extends StatefulWidget {
 class _AddNotePageState extends State<AddNotePage> {
   late TextEditingController _title;
   late TextEditingController _description;
-  
+
+  DatabaseService databaseService = DatabaseService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  
+
   @override
   void initState() {
     _title = TextEditingController();
     _description = TextEditingController();
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +33,7 @@ class _AddNotePageState extends State<AddNotePage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric( horizontal: 16 ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Form(
             key: _formKey,
             child: Column(
@@ -38,7 +43,7 @@ class _AddNotePageState extends State<AddNotePage> {
                   style: const TextStyle(
                     fontSize: 48,
                     fontWeight: FontWeight.bold,
-                    ),
+                  ),
                   decoration: const InputDecoration(
                     hintText: "title",
                     border: InputBorder.none,
@@ -48,7 +53,7 @@ class _AddNotePageState extends State<AddNotePage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == ""){
+                    if (value == "") {
                       return "tite can't null";
                     }
                     return null;
@@ -60,17 +65,17 @@ class _AddNotePageState extends State<AddNotePage> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    ),
+                  ),
                   decoration: const InputDecoration(
                     hintText: "description",
                     border: InputBorder.none,
                     hintStyle: TextStyle(
-                      fontSize:14,
+                      fontSize: 14,
                       fontWeight: FontWeight.normal,
                     ),
                   ),
                   validator: (value) {
-                    if (value == ""){
+                    if (value == "") {
                       return "desc can't null";
                     }
                     return null;
@@ -78,12 +83,22 @@ class _AddNotePageState extends State<AddNotePage> {
                 ),
               ],
             ),
-
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: (){},
+        onPressed: () async {
+          if (_formKey.currentState!.validate()) {
+            //  ADD Note
+            Note note = Note(
+              _title.text, 
+              _description.text, 
+              DateTime.now(),
+            );
+            await databaseService.addNote(note);
+            GoRouter.of(context).pop();
+          }
+        },
         label: const Text("Save"),
         icon: const Icon(Icons.save),
       ),

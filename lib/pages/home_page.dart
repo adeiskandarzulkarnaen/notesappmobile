@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+// import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:notes_app/db/database_service.dart';
+import 'package:notes_app/extentions/format_date.dart';
+import 'package:notes_app/models/note.dart';
 import 'package:notes_app/utils/app_routes.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,6 +15,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final DatabaseService dbService = DatabaseService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,52 +24,81 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Notes App"),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          GoRouter.of(context).goNamed(
-            AppRoutes.addNote
-          );
+        onPressed: () {
+          GoRouter.of(context).goNamed(AppRoutes.addNote);
         },
         child: const Icon(
           Icons.note_add_rounded,
         ),
       ),
-      body: Column(
-        children: const [
-          NoteCard(),
-          NoteCard(),
-        ]
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box(DatabaseService.boxName).listenable(),
+        builder: (context, box, child) {
+          if (box.isEmpty) {
+            return const Center(
+              child: Text("Tidak ada Catatan"),
+            );
+          } else {
+            return ListView.separated(
+              itemBuilder: (context, index) { 
+                return Dismissible(
+                  key: Key(box.getAt(index).key.toString()),
+                  child: NoteCard(
+                    note: box.getAt(index),
+                  ),
+                  onDismissed: (_) async {
+                    await dbService
+                      .deleteNote(box.getAt(index))
+                      .then((_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "${box.getAt(index).title} telah dihapus"
+                            ),
+                          ),
+                        );
+                      });
+                  },
+                );
+              },
+              separatorBuilder: (context, index) { 
+                return const SizedBox(
+                  height: 8,
+                );
+              },
+              itemCount: box.length,
+            );
+          }
+        },
       ),
     );
   }
 }
 
 class NoteCard extends StatelessWidget {
-  const NoteCard({
-    super.key,
-  });
+  final Note note;
+
+  const NoteCard({super.key, required this.note});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 4
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         // border: Border.all(color: Colors.black),
         color: Colors.white,
       ),
       child: ListTile(
-        onTap: (){},
+        onTap: () {},
         title: Text(
-          "Judul Catatan",
-          style: TextStyle(
+          note.title,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
-        subtitle: Text("Deskripsi"),
-        trailing: Text("Dibuat pada: \n20-12-2022"),
+        subtitle: Text(note.description),
+        trailing: Text(note.createdAt.formatDate()),
       ),
     );
   }
