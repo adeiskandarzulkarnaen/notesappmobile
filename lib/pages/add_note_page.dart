@@ -5,7 +5,8 @@ import 'package:notes_app/db/database_service.dart';
 import '../models/note.dart';
 
 class AddNotePage extends StatefulWidget {
-  const AddNotePage({super.key});
+  final Note? note;
+  const AddNotePage({super.key, this.note});
 
   @override
   State<AddNotePage> createState() => _AddNotePageState();
@@ -22,6 +23,12 @@ class _AddNotePageState extends State<AddNotePage> {
   void initState() {
     _title = TextEditingController();
     _description = TextEditingController();
+
+    if (widget.note != null) {
+      _title.text = widget.note!.title;
+      _description.text = widget.note!.description;
+    }
+
     super.initState();
   }
 
@@ -29,7 +36,9 @@ class _AddNotePageState extends State<AddNotePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add New Note"),
+        title: Text(
+          widget.note != null ? "Edit Note" : "Add New Note",
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -95,8 +104,14 @@ class _AddNotePageState extends State<AddNotePage> {
               _description.text, 
               DateTime.now(),
             );
-            await databaseService.addNote(note);
-            GoRouter.of(context).pop();
+
+            if (widget.note != null ){
+              await databaseService.editNote(widget.note!.key, note);
+              GoRouter.of(context).pop();
+            } else {
+              await databaseService.addNote(note);
+              GoRouter.of(context).pop();
+            }
           }
         },
         label: const Text("Save"),

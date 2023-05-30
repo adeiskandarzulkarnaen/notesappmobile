@@ -90,14 +90,25 @@ class NoteCard extends StatelessWidget {
         color: Colors.white,
       ),
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          GoRouter.of(context).pushNamed(
+            AppRoutes.editNote,
+            extra: note
+          );
+        },
         title: Text(
           note.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
-        subtitle: Text(note.description),
+        subtitle: Text(
+          note.description,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         trailing: Text(note.createdAt.formatDate()),
       ),
     );
