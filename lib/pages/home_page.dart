@@ -1,115 +1,98 @@
+
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-// import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:notes_app/db/database_service.dart';
-import 'package:notes_app/extentions/format_date.dart';
-import 'package:notes_app/models/note.dart';
-import 'package:notes_app/utils/app_routes.dart';
+import 'package:notesappflutter/services/database_service.dart';
+import '../models/note.dart';
+import 'fragments/note_card.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final DatabaseService dbService;
+  const HomePage({super.key, required this.dbService});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final DatabaseService dbService = DatabaseService();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Notes App"),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          GoRouter.of(context).goNamed(AppRoutes.addNote);
-        },
-        child: const Icon(
-          Icons.note_add_rounded,
+        toolbarHeight: 100,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "Notes",
+                  style: Theme.of(context)
+                    .textTheme
+                    .displayMedium!
+                    .copyWith(fontWeight: FontWeight.bold),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                  child: Text(
+                    " app",
+                    style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              " Safeguard Your Ideas with NotesApp",
+              style: Theme.of(context)
+                .textTheme
+                .bodyMedium,
+            ),
+          ],
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/about');
+            },
+            iconSize: 28.0,
+            padding: const EdgeInsets.all(8),
+            icon: const Icon(Icons.info_outline),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
-      body: ValueListenableBuilder(
-        valueListenable: Hive.box(DatabaseService.boxName).listenable(),
-        builder: (context, box, child) {
-          if (box.isEmpty) {
-            return const Center(
-              child: Text("Tidak ada Catatan"),
+      body: FutureBuilder(
+        future: widget.dbService.getNotes(), 
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if(snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if(snapshot.hasData && snapshot.data != null) {
+            List<Note> listOfNote = snapshot.data!;
+            return ListView.builder(
+              itemCount: listOfNote.length,
+              itemBuilder: (context, index) {
+                return NoteCard(
+                  note: listOfNote[index],
+                  dbService: widget.dbService,
+                );
+              },
             );
           } else {
-            return ListView.separated(
-              itemBuilder: (context, index) { 
-                return Dismissible(
-                  key: Key(box.getAt(index).key.toString()),
-                  child: NoteCard(
-                    note: box.getAt(index),
-                  ),
-                  onDismissed: (_) async {
-                    await dbService
-                      .deleteNote(box.getAt(index))
-                      .then((_) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "${box.getAt(index).title} telah dihapus"
-                            ),
-                          ),
-                        );
-                      });
-                  },
-                );
-              },
-              separatorBuilder: (context, index) { 
-                return const SizedBox(
-                  height: 8,
-                );
-              },
-              itemCount: box.length,
-            );
+            return const Center(child: Text("No Data"));
           }
         },
       ),
-    );
-  }
-}
-
-class NoteCard extends StatelessWidget {
-  final Note note;
-
-  const NoteCard({super.key, required this.note});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        // border: Border.all(color: Colors.black),
-        color: Colors.white,
-      ),
-      child: ListTile(
-        onTap: () {
-          GoRouter.of(context).pushNamed(
-            AppRoutes.editNote,
-            extra: note
-          );
-        },
-        title: Text(
-          note.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Text(
-          note.description,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: Text(note.createdAt.formatDate()),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await Navigator.pushNamed(context, '/addnote');
+          setState(() { });
+        }, 
+        label: const Text("Add Note"),
+        icon: const Icon(Icons.note_add_rounded),
       ),
     );
   }

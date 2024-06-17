@@ -1,18 +1,34 @@
-import 'package:hive/hive.dart';
 
-part 'note.g.dart';
-
-@HiveType(typeId: 0)
-class Note extends HiveObject {
-  @HiveField(0)
+class Note {
+  late int? id;
   late String title;
-
-  @HiveField(1)
   late String description;
+  late DateTime updatedAt;
 
-  @HiveField(2)
-  late DateTime createdAt;
+  Note({
+    this.id,
+    required this.title,
+    required this.description,
+    required this.updatedAt
+  });
 
-  Note( this.title, this.description, this.createdAt);
+  // Factory method to create Note from Map
+  factory Note.fromMap(Map<String, dynamic>map) {
+    return Note(
+      id: map["id"],
+      title: map["title"],
+      description: map["description"],
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(map["updated_at"]), // Convert int to DateTime
+    );
+  }
 
+  // Method to convert Note to Map
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'updated_at': updatedAt.millisecondsSinceEpoch, // Convert DateTime to int
+    };
+  }
 }

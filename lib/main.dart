@@ -1,33 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/models/note.dart';
-import 'package:notes_app/utils/app_routes.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/services.dart';
 
-import 'db/database_service.dart';
+import 'models/note.dart';
+import 'pages/about_page.dart';
+import 'pages/home_page.dart';
+import 'pages/add_note_page.dart';
+import 'services/database_service.dart';
 
-
-void main() async {
-  await Hive.initFlutter();
-  Hive.registerAdapter(NoteAdapter());
-  await Hive.openBox(DatabaseService.boxName);
-  runApp(const MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: Brightness.dark,
+    ),
+  );
+  final dbService = DatabaseService();
+  runApp(NotesApp(dbService: dbService));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NotesApp extends StatelessWidget {
+  final DatabaseService dbService;
+  const NotesApp({super.key, required this.dbService});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Notes App',
+    return MaterialApp(
+      title: 'NotesApp',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
+        fontFamily: 'Quicksand',
+        primaryColor: Colors.white,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      debugShowCheckedModeBanner: false,
-      routeInformationParser: AppRoutes.goRouter.routeInformationParser,
-      routeInformationProvider: AppRoutes.goRouter.routeInformationProvider,
-      routerDelegate: AppRoutes.goRouter.routerDelegate,
+      initialRoute: '/home',
+      routes: {
+        "/home" : (context) => HomePage(dbService: dbService),
+        "/about" : (context) => const AboutPage(),
+        "/addnote": (context) => AddNotePage(
+          dbService: dbService,
+          note: ModalRoute.of(context)?.settings.arguments as Note?,
+        ),
+      },
     );
   }
 }
