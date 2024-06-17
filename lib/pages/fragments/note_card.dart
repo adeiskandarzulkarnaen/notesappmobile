@@ -8,7 +8,14 @@ import '../../services/database_service.dart';
 class NoteCard extends StatelessWidget {
   final Note note;
   final DatabaseService dbService;
-  const NoteCard({super.key, required this.note, required this.dbService});
+  final VoidCallback? onUpdateCallback;
+
+  const NoteCard({
+    super.key,
+    required this.note,
+    required this.dbService,
+    this.onUpdateCallback
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +24,7 @@ class NoteCard extends StatelessWidget {
       confirmDismiss: (direction) => _confirmDismiss(context),
       onDismissed: (direction) async {
         await dbService.deleteNote(note.id!);
+        if (onUpdateCallback != null) onUpdateCallback!();
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -34,8 +42,9 @@ class NoteCard extends StatelessWidget {
           ],
         ),
         child: ListTile(
-          onTap: () {
-            Navigator.pushNamed(context, '/addnote', arguments: note);
+          onTap: () async {
+            await Navigator.pushNamed(context, '/addnote', arguments: note);
+            if (onUpdateCallback != null) onUpdateCallback!();
           },
           title: Text(
             note.title,

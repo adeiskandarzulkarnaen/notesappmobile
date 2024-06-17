@@ -24,7 +24,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: true
-  image_path: "assets/images/notes-icon.png"
+  image_path: "assets/images/sticky-note.png"
   min_sdk_android: 21
 
 flutter:

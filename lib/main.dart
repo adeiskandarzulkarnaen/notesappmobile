@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'models/note.dart';
 import 'pages/about_page.dart';
 import 'pages/home_page.dart';
-import 'pages/add_note_page.dart';
+import 'pages/addnote_page.dart';
 import 'services/database_service.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 # NotesApp
 
-NotesApp is a note-taking application that allows users to create, edit, and delete their notes. This application consumes an API from the backend to store and retrieve note data. The backend of this application can be accessed at [notesapp-backend](https://github.com/adeiskandarzulkarnaen/notesapp-backend).
+NotesApp is a note-taking application that allows users to create, edit, and delete their notes. This application uses Flutter local storage with sqflite to store and retrieve note data locally on the device.
 
 ## Features
 
@@ -16,14 +16,16 @@ NotesApp is a note-taking application that allows users to create, edit, and del
 - **Flutter**: A framework for building responsive and attractive user interfaces.
 
 ### Dependencies
-- **HTTP Package**: To make requests to the backend API.
-- **Shared Preferences**: To store local data on the device.
+- **sqflite**: To handle local database storage.
+- **path_provider**: To find commonly used locations on the filesystem.
+- **initl**: To format dates and other localization needs.
+
 
 ## Installation
 
 1. **Clone this Repository**
     ```bash
-    git clone https://github.com/adeiskandarzulkarnaen/notesappflutter.git
+    git clone https://github.com/adeiskandarzulkarnaen/notesappflutter_local.git
     cd notesapp
     ```
 
@@ -36,10 +38,6 @@ NotesApp is a note-taking application that allows users to create, edit, and del
     ```bash
     flutter run
     ```
-
-## Backend API
-
-The backend API used by this application can be found at the following repository: [notesapp-backend](https://github.com/adeiskandarzulkarnaen/notesapp-backend).
 
 ## Contributions
 
