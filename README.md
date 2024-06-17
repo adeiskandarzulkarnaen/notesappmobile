@@ -26,7 +26,7 @@ NotesApp is a note-taking application that allows users to create, edit, and del
 1. **Clone this Repository**
     ```bash
     git clone https://github.com/adeiskandarzulkarnaen/notesappflutter_local.git
-    cd notesapp
+    cd notesappflutter_local
     ```
 
 2. **Install Dependencies**
