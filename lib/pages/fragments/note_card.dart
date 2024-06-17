@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:notesappflutter/extentions/format_date.dart';
 
+import '../../extentions/format_date.dart';
 import '../../models/note.dart';
 import '../../services/database_service.dart';
 

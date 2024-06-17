@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:notesappflutter/services/database_service.dart';
+
 import '../models/note.dart';
+import '../services/database_service.dart';
 import 'fragments/custom_appbar.dart';
 import 'fragments/note_card.dart';
 
