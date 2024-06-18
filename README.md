@@ -1,4 +1,4 @@
-# NotesApp
+# NotesApp Mobile
 
 NotesApp is a note-taking application that allows users to create, edit, and delete their notes. This application uses Flutter local storage with sqflite to store and retrieve note data locally on the device.
 
@@ -25,8 +25,8 @@ NotesApp is a note-taking application that allows users to create, edit, and del
 
 1. **Clone this Repository**
     ```bash
-    git clone https://github.com/adeiskandarzulkarnaen/notesappflutter_local.git
-    cd notesappflutter_local
+    git clone https://github.com/adeiskandarzulkarnaen/notesappmobile.git
+    cd notesappmobile
     ```
 
 2. **Install Dependencies**
@@ -46,3 +46,13 @@ Contributions are highly welcomed! If you have ideas for improving this applicat
 ## License
 
 This application is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+
+## Project Thumbnail 
+
+<p float="left">
+    <img src="./docs/img/notesapp.png" alt="notesapp" width="250">
+    &nbsp;&nbsp;
+    <img src="./docs/img/home_page.png" alt="home_page" width="250">
+    &nbsp;&nbsp;
+    <img src="./docs/img/addnote_page.png" alt="addnote_page" width="250">
+</p>
