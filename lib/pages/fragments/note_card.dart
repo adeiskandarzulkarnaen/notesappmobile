@@ -24,7 +24,6 @@ class NoteCard extends StatelessWidget {
       confirmDismiss: (direction) => _confirmDismiss(context),
       onDismissed: (direction) async {
         await dbService.deleteNote(note.id!);
-        if (onUpdateCallback != null) onUpdateCallback!();
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
